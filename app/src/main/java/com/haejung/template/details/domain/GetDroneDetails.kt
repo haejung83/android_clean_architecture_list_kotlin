@@ -1,28 +1,26 @@
 package com.haejung.template.details.domain
 
-import com.haejung.template.UseCase
-import com.haejung.template.data.Drone
 import com.haejung.template.data.source.DroneRepository
-import com.haejung.template.data.source.DronesDataSource
+import com.haejung.template.domain.FlowableUseCase
+import io.reactivex.Flowable
+import io.reactivex.Scheduler
 
 class GetDroneDetails(
-    private val droneRepository: DroneRepository
-) : UseCase<DroneDetails, GetDroneDetails.Params>() {
+    private val droneRepository: DroneRepository,
+    subscribeScheduler: Scheduler,
+    observeScheduler: Scheduler
+) : FlowableUseCase<DroneDetails, GetDroneDetails.Params>(subscribeScheduler, observeScheduler) {
 
-    override fun execute(onSuccess: (DroneDetails) -> Unit, onError: (Throwable) -> Unit, params: Params) {
-        droneRepository.getDrone(params.name, object : DronesDataSource.GetDroneCallback {
-            override fun onDroneLoaded(drone: Drone) {
-                with(drone) {
-                    // Map this from data model to entity
-                    onSuccess(DroneDetails(name, type, size, fc, image))
+    override fun buildUseCaseObservable(params: Params?): Flowable<DroneDetails> =
+        droneRepository
+            .getDrone(params!!.name)
+            .filter { it.isPresent }
+            .map {
+                with(it.get()) {
+                    DroneDetails(name, type, size, fc, image)
                 }
             }
 
-            override fun onDataNotAvailable() {
-                onError(Throwable("Data not available"))
-            }
-        })
-    }
-
+    // Parameter class
     class Params(val name: String)
 }

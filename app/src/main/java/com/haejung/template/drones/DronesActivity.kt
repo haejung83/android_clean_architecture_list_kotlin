@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.haejung.template.R
 import com.haejung.template.data.injectRepository
 import com.haejung.template.drones.domain.GetDroneSummaries
+import com.haejung.template.drones.domain.SetRefreshDrones
 import com.haejung.template.util.replaceFragmentInActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class DronesActivity : AppCompatActivity() {
 
@@ -21,8 +24,16 @@ class DronesActivity : AppCompatActivity() {
             replaceFragmentInActivity(it, R.id.content)
         }
 
+        val repository = injectRepository(applicationContext)
+        val subscribeScheduler = Schedulers.io()
+        val observeScheduler = AndroidSchedulers.mainThread()
+
         // Create Presenter (Presenter)
-        dronesPresenter = DronesPresenter(GetDroneSummaries(injectRepository(applicationContext)), dronesFragment)
+        dronesPresenter = DronesPresenter(
+            SetRefreshDrones(repository, subscribeScheduler, observeScheduler),
+            GetDroneSummaries(repository, subscribeScheduler, observeScheduler),
+            dronesFragment
+        )
     }
 
 }

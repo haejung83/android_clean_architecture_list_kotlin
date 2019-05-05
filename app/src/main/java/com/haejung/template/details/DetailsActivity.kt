@@ -6,6 +6,8 @@ import com.haejung.template.R
 import com.haejung.template.data.injectRepository
 import com.haejung.template.details.domain.GetDroneDetails
 import com.haejung.template.util.replaceFragmentInActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class DetailsActivity : AppCompatActivity() {
 
@@ -27,7 +29,11 @@ class DetailsActivity : AppCompatActivity() {
         // Create Presenter
         detailsPresenter = DetailsPresenter(
             droneName,
-            GetDroneDetails(injectRepository(applicationContext)),
+            GetDroneDetails(
+                injectRepository(applicationContext),
+                Schedulers.io(),
+                AndroidSchedulers.mainThread()
+            ),
             detailsFragment
         )
     }
