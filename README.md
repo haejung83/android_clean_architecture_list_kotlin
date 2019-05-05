@@ -1,6 +1,8 @@
 # [List] Android Clean Architecture Pattern (Presentation: MVP) 
 > RxJava와 함께 간단한 Clean Architecture 패턴을 사용한 List 화면 Android 예제 입니다. 
 
+* RxJava Version
+  * [Branch](https://github.com/haejung83/android_clean_architecture_list_kotlin/tree/clean_arch_rxjava)
 
 
 * 사용기술
